@@ -16,7 +16,7 @@ pub fn start_app() {
     for (i, (elf_no, calory_sum)) in n_most_calory_elves.iter().enumerate() {
         println!(
             "Elf No. {:?} carries the {:?}-most calories, namely {:?}.",
-            elf_no,
+            elf_no + 1,
             i + 1,
             calory_sum
         );

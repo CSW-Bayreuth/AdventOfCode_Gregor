@@ -7,16 +7,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in library 'aoc22-1'",
+            "name": "Debug unit tests in library 'aoc22-01'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
                     "--lib",
-                    "--package=aoc22-1"
+                    "--package=aoc22-01"
                 ],
                 "filter": {
-                    "name": "aoc22-1",
+                    "name": "aoc22-01",
                     "kind": "lib"
                 }
             },
@@ -26,15 +26,15 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'aoc22_1'",
+            "name": "Debug executable 'aoc22_01'",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=aoc22_1",
-                    "--package=aoc22-1"
+                    "--bin=aoc22_01",
+                    "--package=aoc22-01"
                 ],
                 "filter": {
-                    "name": "aoc22_1",
+                    "name": "aoc22_01",
                     "kind": "bin"
                 }
             },
@@ -44,16 +44,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in executable 'aoc22_1'",
+            "name": "Debug unit tests in executable 'aoc22_01'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin=aoc22_1",
-                    "--package=aoc22-1"
+                    "--bin=aoc22_01",
+                    "--package=aoc22-01"
                 ],
                 "filter": {
-                    "name": "aoc22_1",
+                    "name": "aoc22_01",
                     "kind": "bin"
                 }
             },

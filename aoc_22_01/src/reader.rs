@@ -1,6 +1,6 @@
-use crate::app::model::Elf;
-use crate::app::model::FoodRation;
-use crate::app::utils::PushReturn;
+use super::model::Elf;
+use super::model::FoodRation;
+use super::utils::PushReturn;
 use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;

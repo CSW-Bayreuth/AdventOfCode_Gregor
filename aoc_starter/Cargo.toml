@@ -1,0 +1,8 @@
+[package]
+name = "aoc_starter"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+aoc_22_01 = { path = "../aoc_22_01" }
+aoc_22_02 = { path = "../aoc_22_02" }

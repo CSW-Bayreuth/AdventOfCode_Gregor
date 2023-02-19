@@ -1,27 +1,26 @@
 use super::model::Elf;
 use super::model::FoodRation;
-use super::utils::PushReturn;
 use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
 
 // ----------------------------------------------------
-pub fn read_elfs_and_foodrations(filepath: &Path, elflist: &mut Vec<Elf>) {
-    let mut currentelf = elflist.push_return(Elf::default());
-
-    if let Ok(lines) = read_lines(filepath) {
-        for line in lines {
-            if let Ok(line_content) = line {
-                match line_content.as_str().trim() {
-                    "" => currentelf = elflist.push_return(Elf::default()),
-                    calories => read_foodration_for_elf(&mut currentelf, calories),
-                }
+pub fn read(filepath: &Path) -> Vec<Elf> {
+    read_lines(filepath)
+        .unwrap()
+        .map(Result::unwrap)
+        .map(|s| String::from(s.as_str().trim()))
+        .fold(vec![Elf::default()], |mut acc_v, s| {
+            match s.as_str() {
+                "" => acc_v.push(Elf::default()),
+                ref calories => read_foodration(acc_v.last_mut().unwrap(), calories),
             }
-        }
-    }
+            acc_v
+        })
 }
 
-fn read_foodration_for_elf(elf: &mut Elf, calories: &str) {
+// ----------------------------------------------------
+fn read_foodration(elf: &mut Elf, calories: &str) {
     elf.inventory.push(FoodRation {
         calories: calories
             .parse()
@@ -31,6 +30,5 @@ fn read_foodration_for_elf(elf: &mut Elf, calories: &str) {
 
 // ----------------------------------------------------
 fn read_lines(filepath: &Path) -> io::Result<io::Lines<io::BufReader<File>>> {
-    let file = File::open(filepath)?;
-    Ok(io::BufReader::new(file).lines())
+    Ok(io::BufReader::new(File::open(filepath)?).lines())
 }

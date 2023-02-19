@@ -3,38 +3,31 @@ pub mod reader;
 pub mod utils;
 
 use model::Elf;
-use reader::read_elfs_and_foodrations;
+use reader::read;
 use std::path::Path;
 
 pub fn start_app() {
-    let mut elflist: Vec<Elf> = Vec::new();
+    let n_most_calory_elves =
+        n_most_calory_elves(read(Path::new("./input/aoc_22_01/input.txt")), 3);
 
-    read_elfs_and_foodrations(Path::new("./input/aoc_22_01/input.txt"), &mut elflist);
-
-    let n_most_calory_elves = n_elfs_with_most_calories(&elflist, 3);
-
-    for (i, (elf_no, calory_sum)) in n_most_calory_elves.iter().enumerate() {
+    for (place, (elf_no, calory_sum)) in n_most_calory_elves
+        .iter()
+        .enumerate()
+        .map(|(i, t)| (i + 1, t))
+    {
         println!(
             "Elf No. {:?} carries the {:?}-most calories, namely {:?}.",
-            elf_no,
-            i + 1,
-            calory_sum
+            elf_no, place, calory_sum
         );
     }
 
-    println!("");
-
     println!(
-        "The sum of the three highest calory sums is {:?}.",
-        sum_element_two(&n_most_calory_elves)
+        "\nThe sum of the three highest calory sums is {:?}.",
+        n_most_calory_elves.iter().map(|(_, num)| num).sum::<u32>()
     );
 }
 
-fn sum_element_two(vec_of_pairs: &Vec<(usize, u32)>) -> u32 {
-    vec_of_pairs.iter().map(|(_, num)| num).sum::<u32>()
-}
-
-fn n_elfs_with_most_calories(elflist: &Vec<Elf>, n: usize) -> Vec<(usize, u32)> {
+fn n_most_calory_elves(elflist: Vec<Elf>, n: usize) -> Vec<(usize, u32)> {
     let mut index_sum_list = elflist
         .iter()
         .enumerate()

@@ -4,19 +4,19 @@ use std::{
     path::Path,
 };
 
-use crate::model::RpsMove;
+use crate::model::{RpsMove, RpsTwoMoves};
 
 // ----------------------------------------------------
-pub fn read_strategy_guides(filepath: &Path) -> Vec<(RpsMove, RpsMove)> {
+pub fn read_strategy_guides(filepath: &Path) -> Vec<RpsTwoMoves> {
     read_file(filepath)
         .lines()
         .map(Result::unwrap)
         .map(read_strategy_guide)
-        .collect::<Vec<(RpsMove, RpsMove)>>()
+        .collect::<Vec<RpsTwoMoves>>()
 }
 
 // ----------------------------------------------------
-fn read_strategy_guide(data: String) -> (RpsMove, RpsMove) {
+fn read_strategy_guide(data: String) -> RpsTwoMoves {
     assert!(data.len() == 3);
     assert!(data.chars().nth(1).unwrap() == ' ');
     (

@@ -1,12 +1,11 @@
-pub type RPS_StrategyGuide = Vec<(RPS_Move, RPS_Move)>;
-
-pub enum RPS_Move {
+#[derive(Debug)]
+pub enum RpsMove {
     Rock,
     Paper,
     Scissors,
 }
 
-impl RPS_Move {
+impl RpsMove {
     pub fn score(&self) -> u8 {
         match self {
             Rock => 1,

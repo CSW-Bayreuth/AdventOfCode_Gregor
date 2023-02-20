@@ -1,4 +1,6 @@
-#[derive(Debug)]
+// you = player 2
+
+#[derive(Debug, Clone)]
 pub enum RpsMove {
     Rock,
     Paper,
@@ -16,7 +18,7 @@ impl RpsMove {
 }
 
 #[derive(Debug)]
-enum RpsRoundResult {
+pub enum RpsRoundResult {
     Player1Wins,
     Draw,
     Player2Wins,

@@ -1,5 +1,6 @@
 use aoc_22_01;
 use aoc_22_02;
+use aoc_22_03;
 
 fn main() {
     println!("--------------------");
@@ -11,6 +12,11 @@ fn main() {
     println!("Running aoc_22_02...");
     println!("--------------------");
     aoc_22_02::start_app();
+    println!("");
+    println!("--------------------");
+    println!("Running aoc_22_03...");
+    println!("--------------------");
+    aoc_22_03::start_app();
     println!("");
     println!("--------------------");
 }

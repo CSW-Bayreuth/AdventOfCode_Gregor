@@ -22,6 +22,6 @@ pub fn start_app() {
     let knapsacks = Path::new("./input/aoc_22_03/input.txt").read();
     println!(
         "Sum of priorities of wrongly sorted items is {}.",
-        calc_sum_of_wrong_item_priorities(knapsacks)
+        sum_of_wrong_item_priorities(&knapsacks)
     );
 }

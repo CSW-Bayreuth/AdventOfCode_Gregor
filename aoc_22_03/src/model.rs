@@ -1,7 +1,33 @@
 // ----------------------------------------------------
-// Knapsack
+// Elf Group (Iter)
 // ----------------------------------------------------
-pub type ElfGroup<'a> = (&'a Knapsack, &'a Knapsack, &'a Knapsack);
+pub struct ElfGroup<'a>(pub &'a Knapsack, pub &'a Knapsack, pub &'a Knapsack);
+
+impl ElfGroup<'_> {
+    pub fn iter(&self) -> ElfGroupIter {
+        ElfGroupIter {
+            current: 0,
+            group: vec![self.0, self.1, self.2],
+        }
+    }
+}
+
+pub struct ElfGroupIter<'a> {
+    current: usize,
+    group: Vec<&'a Knapsack>,
+}
+
+impl<'a> Iterator for ElfGroupIter<'a> {
+    type Item = &'a Knapsack;
+    fn next(&mut self) -> Option<Self::Item> {
+        let mut result = None;
+        if self.current < 3 {
+            result = Some(self.group[self.current]);
+            self.current += 1;
+        }
+        result
+    }
+}
 
 // ----------------------------------------------------
 // Knapsack

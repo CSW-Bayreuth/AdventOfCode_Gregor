@@ -7,3 +7,4 @@ edition = "2021"
 aoc_22_01 = { path = "../aoc_22_01" }
 aoc_22_02 = { path = "../aoc_22_02" }
 aoc_22_03 = { path = "../aoc_22_03" }
+aoc_22_04 = { path = "../aoc_22_04" }

@@ -12,6 +12,7 @@ use std::path::Path;
 
 pub use crate::model::IdRange;
 pub use crate::reader::Reader;
+pub use crate::utils::id_range_pairs_overlapping;
 pub use crate::utils::id_range_pairs_with_one_containing;
 
 // ----------------------------------------------------
@@ -25,5 +26,10 @@ pub fn start_app() {
     println!(
         "Number of id range pairs which fully contain each other: {}",
         id_range_pairs_with_one_containing(&id_range_pairs)
+    );
+
+    println!(
+        "Number of id range pairs overlapping: {}",
+        id_range_pairs_overlapping(&id_range_pairs)
     );
 }

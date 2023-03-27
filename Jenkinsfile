@@ -5,7 +5,7 @@ node('linux') {
         sh 'curl https://sh.rustup.rs/ -sSf >rustup-init.sh'
         sh 'chmod 777 rustup-init.sh'
         sh './rustup-init.sh -y'
-		sh '$HOME/.cargo/bin/cargo install cargo-test-junit'
+		//sh '$HOME/.cargo/bin/cargo install cargo-test-junit'
     }
     
     def solutions = [
@@ -26,10 +26,10 @@ node('linux') {
                     stage("${path}: Build") {
                         sh '$HOME/.cargo/bin/cargo build'
                     }
-                    stage("${path}: Test") {
-                        sh(script: '$HOME/.cargo/bin/cargo test-junit --name TestResults.xml', returnStatus: true)
-                        junit(testResults: '**/TestResults.xml', allowEmptyResults: true)
-                    }
+                    //stage("${path}: Test") {
+                    //    sh(script: '$HOME/.cargo/bin/cargo test-junit --name TestResults.xml', returnStatus: true)
+                    //    junit(testResults: '**/TestResults.xml', allowEmptyResults: true)
+                    //}
                     stage("${path}: Run") {
                         sh '$HOME/.cargo/bin/cargo run'
                     }

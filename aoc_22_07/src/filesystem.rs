@@ -13,7 +13,7 @@ pub enum DirContent<'a> {
     },
     Dir {
         name: &'a str,
-        content: Vec<DirContent<'a>>,
+        content: Vec<&'a mut DirContent<'a>>,
     },
 }
 
@@ -29,6 +29,6 @@ pub fn size_recursive(content: &DirContent) -> usize {
     }
 }
 
-pub fn sum_sizes_of_dirs_with_size_lower_max(content: &DirContent, max_size: usize) -> usize {
+pub fn sum_sizes_of_dirs_with_size_lower_max(_content: &DirContent, _max_size: usize) -> usize {
     panic!("not implemented");
 }

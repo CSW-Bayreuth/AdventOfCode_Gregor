@@ -13,16 +13,14 @@ use aoc_23_02::*;
 // ----------------------------------------------------
 
 #[rstest]
-#[case(std::path::Path::new("./../input/aoc_23_02/input_example.txt"), 12, 13, 14, 8)]
+#[case(std::path::Path::new("./../input/aoc_23_02/input_example.txt"), HandfulOfCubes(12, 13, 14), 8)]
 fn test_sum_of_possible_game_ids(
     #[case] filepath: &std::path::Path,
-    #[case] num_reds: usize,
-    #[case] num_greens: usize,
-    #[case] num_blues: usize,
+    #[case] cube_count: HandfulOfCubes,
     #[case] expected: usize
 ) {
     assert_eq!(
-        sum_of_possible_game_ids(read_puzzleinput(filepath), num_reds, num_greens, num_blues),
+        sum_of_possible_game_ids(read_puzzleinput(filepath), cube_count),
         expected,
     );
 }
@@ -38,7 +36,35 @@ fn test_is_game_possible(
     #[case] expected: bool
 ) {
     assert_eq!(
-        is_game_possible(&read_game(input_line.to_string()).handfuls, 12, 13, 14),
+        is_game_possible(&read_game(input_line.to_string()).handfuls, HandfulOfCubes(12, 13, 14)),
+        expected,
+    );
+}
+
+#[rstest]
+#[case(std::path::Path::new("./../input/aoc_23_02/input_example.txt"), 2286)]
+fn test_power_of_min_required_cube_count(
+    #[case] filepath: &std::path::Path,
+    #[case] expected: usize
+) {
+    assert_eq!(
+        power_of_min_required_cube_count(read_puzzleinput(filepath)),
+        expected,
+    );
+}
+
+#[rstest]
+#[case("Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green", HandfulOfCubes(4, 2, 6))]
+#[case("Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue", HandfulOfCubes(1, 3, 4))]
+#[case("Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red", HandfulOfCubes(20, 13, 6))]
+#[case("Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red", HandfulOfCubes(14, 3, 15))]
+#[case("Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green", HandfulOfCubes(6, 3, 2))]
+fn test_min_required_cube_count(
+    #[case] input_line: &str,
+    #[case] expected: HandfulOfCubes
+) {
+    assert_eq!(
+        min_required_cube_count(&read_game(input_line.to_string()).handfuls),
         expected,
     );
 }
@@ -48,13 +74,13 @@ fn test_is_game_possible(
 // ----------------------------------------------------
 
 #[rstest]
-#[case("3 blue", CubeCount::Blue(3))]
-#[case("4 red", CubeCount::Red(4))]
-#[case("2 green", CubeCount::Green(2))]
-#[case("6 blue", CubeCount::Blue(6))]
+#[case("3 blue", CubeColorCount::Blue(3))]
+#[case("4 red", CubeColorCount::Red(4))]
+#[case("2 green", CubeColorCount::Green(2))]
+#[case("6 blue", CubeColorCount::Blue(6))]
 fn test_read_cubecount(
     #[case] input_line: &str,
-    #[case] expected: CubeCount
+    #[case] expected: CubeColorCount
 ) {
     assert_eq!(
         read_cubecount(input_line),

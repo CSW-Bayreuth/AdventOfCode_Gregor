@@ -1,0 +1,7 @@
+[package]
+name = "aoc_23_02"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rstest = "0.17.0"

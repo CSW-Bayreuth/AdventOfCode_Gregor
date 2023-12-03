@@ -55,4 +55,9 @@ fn main() {
     aoc_23_02::start_app();
     println!("");
     println!("--------------------");
+    println!("Running aoc_23_03...");
+    println!("--------------------");
+    aoc_23_03::start_app();
+    println!("");
+    println!("--------------------");
 }

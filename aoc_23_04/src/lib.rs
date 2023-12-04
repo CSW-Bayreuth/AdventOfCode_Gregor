@@ -27,35 +27,33 @@ pub fn start_app() {
 // Evaluation
 // ----------------------------------------------------
 
-pub fn scratchcard_evolution(in_cards: &Vec<Card>) -> usize
+pub fn scratchcard_evolution(cards: &Vec<Card>) -> usize
 {
-    let mut cards = in_cards.clone();
+    let num_cards = cards.len();
+    let mut remaining_cards = vec![ 1; num_cards ];
 
-    let mut index = 0;
-
-    loop
+    // loop through all card indices
+    for card_idx in 0..num_cards
     {
-        let num_matches = cards[index]
+        let num_matches = cards[card_idx]
             .matching_numbers()
             .len();
 
-        let id = cards[index].id;
-
-        for clone_index in id .. id+num_matches 
+        // make copies for each instance of this card
+        for _ in 0..remaining_cards[card_idx]
         {
-            if clone_index < in_cards.len()
+            // copy cards above this card
+            for clone_index in card_idx+1 .. card_idx+1+num_matches
             {
-                cards.push(cards[clone_index].clone());
+                if clone_index < num_cards
+                {
+                    remaining_cards[clone_index] += 1;
+                }
             }
         }
-
-        index += 1;
-
-        if index == cards.len() 
-            { break; }
     }
 
-    cards.len()
+    remaining_cards.iter().sum()
 }
 
 pub fn worth_of_cards(cards: &Vec<Card>) -> usize 

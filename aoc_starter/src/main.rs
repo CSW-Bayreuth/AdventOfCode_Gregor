@@ -7,6 +7,8 @@ use aoc_22_06;
 use aoc_22_07;
 use aoc_23_01;
 use aoc_23_02;
+use aoc_23_03;
+use aoc_23_04;
 
 fn main() {
     println!("--------------------");
@@ -58,6 +60,11 @@ fn main() {
     println!("Running aoc_23_03...");
     println!("--------------------");
     aoc_23_03::start_app();
+    println!("");
+    println!("--------------------");
+    println!("Running aoc_23_04...");
+    println!("--------------------");
+    aoc_23_04::start_app();
     println!("");
     println!("--------------------");
 }

@@ -67,4 +67,9 @@ fn main() {
     aoc_23_04::start_app();
     println!("");
     println!("--------------------");
+    println!("Running aoc_23_05...");
+    println!("--------------------");
+    aoc_23_05::start_app();
+    println!("");
+    println!("--------------------");
 }

@@ -1,4 +1,4 @@
-use aoc_22_01;
+/* use aoc_22_01;
 use aoc_22_02;
 use aoc_22_03;
 use aoc_22_04;
@@ -8,10 +8,10 @@ use aoc_22_07;
 use aoc_23_01;
 use aoc_23_02;
 use aoc_23_03;
-use aoc_23_04;
+use aoc_23_04; */
 
 fn main() {
-    println!("--------------------");
+/*     println!("--------------------");
     println!("Running aoc_22_01...");
     println!("--------------------");
     aoc_22_01::start_app();
@@ -69,7 +69,7 @@ fn main() {
     println!("--------------------");
     println!("Running aoc_23_05...");
     println!("--------------------");
-    aoc_23_05::start_app();
+    aoc_23_05::start_app(); */
     println!("");
     println!("--------------------");
 }

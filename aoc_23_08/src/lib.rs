@@ -10,8 +10,6 @@ use std::{
 use lazy_static::lazy_static;
 use regex::Regex;
 
-use rayon::iter::{IntoParallelRefIterator, ParallelIterator, IndexedParallelIterator};
-
 // ----------------------------------------------------
 // App
 // ----------------------------------------------------
@@ -23,7 +21,7 @@ pub fn start_app() {
  
     println!(
         "Steps are required to reach __Z-only nodes: {}",
-        read_plan(Path::new("./input/aoc_23_08/input.txt")).steps_to_reach_end_ghost()
+        read_plan(Path::new("./input/aoc_23_08/input.txt")).steps_to_reach_end_ghost2()
     );
 }
 
@@ -33,12 +31,15 @@ pub fn start_app() {
 
 impl Plan {
     
-    pub fn steps_to_reach_end_ghost(&self) -> usize
+    pub fn steps_to_reach_end_ghost2(&self) -> usize
     {
         let mut cur_node_ids = self.nodeid_to_node
             .keys()
-            .filter(|id| id.ends_with("A"))
-            .collect::<Vec<&String>>();
+            .filter(|id| id._ends_with_a)
+            .collect::<Vec<&NodeId>>();
+
+        let mut steps_till_unique_z: Vec<usize> = vec![];
+        steps_till_unique_z.reserve(cur_node_ids.len());
 
         let mut instr_index = 0;
 
@@ -46,12 +47,68 @@ impl Plan {
 
         loop 
         {
-            if cur_node_ids.iter().all(|id| id.ends_with("Z"))
+            if cur_node_ids.is_empty()
             {
                 break;
             }
 
-            println!("{}/{}", cur_node_ids.iter().filter(|id| id.ends_with("Z")).count(), cur_node_ids.len());
+            let mut next_node_ids = vec![];
+            for node_id in cur_node_ids
+            {
+                let cur_node = self.nodeid_to_node.get(node_id).unwrap();
+                let cur_instr = self.nav_instructions[instr_index];
+
+                if node_id._ends_with_z
+                {
+                    steps_till_unique_z.push(steps);
+                }
+                else 
+                {
+                    next_node_ids.push(if cur_instr { &cur_node.left } else { &cur_node.right });
+                }
+            }
+            cur_node_ids = next_node_ids;
+
+            steps += 1;
+
+            instr_index = (instr_index + 1) % self.nav_instructions.len();
+        }
+
+        return steps_till_unique_z
+            .iter()
+            .fold(1, |acc, n| {
+                let n_: usize = *n;
+                num::integer::lcm(acc, n_)
+            })
+    }
+
+
+    
+    pub fn steps_to_reach_end_ghost(&self) -> u128
+    {
+        let mut cur_node_ids = self.nodeid_to_node
+            .keys()
+            .filter(|id| id._ends_with_a)
+            .collect::<Vec<&NodeId>>();
+
+        let mut instr_index = 0;
+
+        let mut steps = 0;
+
+        let mut max_count_so_far: u128 = 0;
+
+        loop 
+        {
+            if cur_node_ids.iter().all(|id| id._ends_with_z)
+            {
+                break;
+            }
+
+            max_count_so_far = u128::max(max_count_so_far, cur_node_ids.iter().filter(|id| id._ends_with_z).count().try_into().unwrap());
+
+            if steps % 1000000 == 0 {
+                println!("{} {}", steps, max_count_so_far);
+            }
 
             let mut next_node_ids = vec![];
             for node_id in cur_node_ids
@@ -59,7 +116,7 @@ impl Plan {
                 let cur_node = self.nodeid_to_node.get(node_id).unwrap();
                 let cur_instr = self.nav_instructions[instr_index];
     
-                next_node_ids.push(if cur_instr == 'L' { &cur_node.left } else { &cur_node.right });
+                next_node_ids.push(if cur_instr { &cur_node.left } else { &cur_node.right });
             }
             cur_node_ids = next_node_ids;
 
@@ -73,29 +130,28 @@ impl Plan {
     
     pub fn steps_to_reach_end_from_aaa(&self) -> usize
     {
-        let start_node = "AAA".to_string();
-        self.steps_to_reach_end_generic(&start_node)
+        self.steps_to_reach_end_generic(NodeId::from_str("AAA"))
     }
 
-    pub fn steps_to_reach_end_generic(&self, start_node: &NodeId) -> usize
+    pub fn steps_to_reach_end_generic(&self, start_node: NodeId) -> usize
     {
         let mut instr_index = 0;
 
         let mut steps = 0;
 
-        let mut cur_node_id = start_node;
+        let mut cur_node_id = &start_node;
 
         loop 
         {
-            if cur_node_id == "ZZZ"
+            if *cur_node_id == NodeId::from_str("ZZZ")
             {
                 break;
             }
 
-            let cur_node = self.nodeid_to_node.get(cur_node_id).unwrap();
+            let cur_node = self.nodeid_to_node.get(&cur_node_id).unwrap();
             let cur_instr = self.nav_instructions[instr_index];
 
-            cur_node_id = if cur_instr == 'L' { &cur_node.left } else { &cur_node.right };
+            cur_node_id = if cur_instr {&cur_node.left} else {&cur_node.right};
 
             steps += 1;
 
@@ -123,9 +179,25 @@ pub struct Node {
     pub right: NodeId
 }
 
-pub type NodeId = String;
+#[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
+pub struct NodeId {
+    pub str: String,
+    pub _ends_with_a: bool,
+    pub _ends_with_z: bool,
+}
 
-pub type Instruction = char;
+impl NodeId {
+    pub fn from_str(in_str: &str) -> NodeId
+    {
+        NodeId { 
+            str: in_str.to_string(),
+            _ends_with_a: in_str.ends_with("A"),
+            _ends_with_z: in_str.ends_with("Z")
+        }
+    }
+}
+
+pub type Instruction = bool;
 
 // ----------------------------------------------------
 // readers
@@ -133,7 +205,7 @@ pub type Instruction = char;
 
 pub fn read_instructions(in_str: &str) -> Vec<Instruction>
 {
-    in_str.chars().collect()
+    in_str.chars().map(|c| if c == 'L' {true} else {false}).collect()
 }
 
 pub fn read_node(in_str: &str) -> Node
@@ -147,7 +219,11 @@ pub fn read_node(in_str: &str) -> Node
         .map(|m| m.as_str())
         .collect::<Vec<&str>>();
 
-    Node { id: ids[0].to_string(), left: ids[1].to_string(), right: ids[2].to_string() }
+    Node { 
+        id: NodeId::from_str(ids[0]), 
+        left: NodeId::from_str(ids[1]), 
+        right: NodeId::from_str(ids[2]) 
+    }
 }
 
 pub fn read_nodeid_to_node(in_lines: Vec<&str>) -> HashMap<NodeId, Node>

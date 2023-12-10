@@ -1,0 +1,10 @@
+[package]
+name = "aoc_23_09"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rstest = "0.17.0"
+rayon = "1.8.0"
+lazy_static = "1.4.0"
+regex = "1.7.1"

@@ -4,7 +4,7 @@
 pub struct ElfGroup<'a>(pub &'a Knapsack, pub &'a Knapsack, pub &'a Knapsack);
 
 impl ElfGroup<'_> {
-    pub fn iter(&self) -> ElfGroupIter {
+    pub fn iter(&'_ self) -> ElfGroupIter<'_> {
         ElfGroupIter {
             current: 0,
             group: vec![self.0, self.1, self.2],

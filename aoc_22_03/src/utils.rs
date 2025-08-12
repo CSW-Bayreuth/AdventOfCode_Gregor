@@ -25,7 +25,7 @@ pub fn find_wrong_item(knapsack: &Knapsack) -> &Item {
 // ----------------------------------------------------
 // part 2: elf groups, badge finding, priority
 // ----------------------------------------------------
-pub fn as_elf_groups(knapsacks: &Vec<Knapsack>) -> Vec<ElfGroup> {
+pub fn as_elf_groups(knapsacks: &'_ Vec<Knapsack>) -> Vec<ElfGroup<'_>> {
     knapsacks
         .iter()
         .enumerate()

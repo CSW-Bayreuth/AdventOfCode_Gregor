@@ -35,7 +35,7 @@ pub enum CDTarget<'a> {
 // ----------------------------------------------------
 // Terminal Output: Parsing
 // ----------------------------------------------------
-pub fn parse_terminal_line(line: &str) -> TerminaLine {
+pub fn parse_terminal_line(line: &'_ str) -> TerminaLine<'_> {
     let mut sections = line.split(" ");
 
     match sections.next().unwrap() {

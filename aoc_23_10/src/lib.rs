@@ -11,10 +11,10 @@ use std::{
 // ----------------------------------------------------
 pub fn start_app() 
 {
-/*     println!(
-        "Sum of right extrapolated values: {}",
-        sum_of_predicted_values(read_histories(Path::new("./input/aoc_23_09/input.txt")), predict_next_value)
-    ); */
+    println!(
+        "Steps to farthest tile from animal: {}",
+        read_field(Path::new("./input/aoc_23_10/input.txt")).steps_to_farthest_tile()
+    );
     //animal_pos = (25,77)
 /*     println!(
         "Sum of left extrapolated values: {}",
@@ -29,7 +29,17 @@ pub fn start_app()
 impl Field {
     pub fn at(&self, pos: Position) -> &Tile
     {
-        &self.tiles[pos.1 as usize][pos.0 as usize]
+        let x = pos.1 as usize;
+        let y = pos.0 as usize;
+        &self.tiles[x][y]
+    }
+
+    pub fn exceeds_bounds(&self, pos: Position) -> bool
+    {
+        pos.0 < 0 
+        || pos.1 < 0 
+        || pos.0 >= self.tiles.len().try_into().unwrap() 
+        || pos.1 >= self.tiles[0].len().try_into().unwrap()
     }
 
     pub fn animal_tile(&self) -> &Tile {
@@ -39,22 +49,22 @@ impl Field {
     pub fn connecting_tiles(&self, tile : &Tile) -> Vec<&Tile> {
         let mut connected_tiles = vec![];
 
-        println!("{:?}", self.at((tile.pos.0 + 1, tile.pos.1)));
-        println!("{:?}", self.at((tile.pos.0 - 1, tile.pos.1)));
-        println!("{:?}", self.at((tile.pos.0, tile.pos.1 + 1)));
-        println!("{:?}", self.at((tile.pos.0, tile.pos.1 - 1)));
+        let pos_east = (tile.pos.0 + 1, tile.pos.1);
+        let pos_west = (tile.pos.0 - 1, tile.pos.1);
+        let pos_south = (tile.pos.0, tile.pos.1 + 1);
+        let pos_north = (tile.pos.0, tile.pos.1 - 1);
 
-        if self.at((tile.pos.0 + 1, tile.pos.1)).connects_west() {
-            connected_tiles.push(self.at((tile.pos.0 + 1, tile.pos.1)));
+        if !self.exceeds_bounds(pos_east) && self.at(pos_east).connects_west() {
+            connected_tiles.push(self.at(pos_east));
         }
-        if self.at((tile.pos.0 - 1, tile.pos.1)).connects_east() {
-            connected_tiles.push(self.at((tile.pos.0 - 1, tile.pos.1)));
+        if !self.exceeds_bounds(pos_west) && self.at(pos_west).connects_east() {
+            connected_tiles.push(self.at(pos_west));
         }
-        if self.at((tile.pos.0, tile.pos.1 + 1)).connects_north() {
-            connected_tiles.push(self.at((tile.pos.0, tile.pos.1 + 1)));
+        if !self.exceeds_bounds(pos_south) && self.at(pos_south).connects_north() {
+            connected_tiles.push(self.at(pos_south));
         }
-        if self.at((tile.pos.0, tile.pos.1 - 1)).connects_south() {
-            connected_tiles.push(self.at((tile.pos.0, tile.pos.1 - 1)));
+        if !self.exceeds_bounds(pos_north) && self.at(pos_north).connects_south() {
+            connected_tiles.push(self.at(pos_north));
         }
 
         connected_tiles
@@ -71,18 +81,22 @@ impl Field {
 
         loop 
         {
-            steps += 1;
-
-            println!("Current/Visited tiles: {:?} / {:?}", current_tiles, visited_tiles);
-            println!("Steps: {:?}", steps);
+            // println!("Current tiles: {:?}", current_tiles);
+            // println!("Visited tiles: {:?}", visited_tiles);
+            // println!("Steps: {:?}", steps);
 
             for tile in &current_tiles
             {
-                println!("Enterable directions: {:?}", tile.enterable_directions());
+                // println!("Enterable directions: {:?} ==> {:?}", tile.enterable_directions(), tile);
 
                 for direction in tile.enterable_directions() {
-                    if let Some((_, next_pos)) = tile.pipe_forward(direction) {
+                    if let Some(next_pos) = tile.pipe_forward(direction) {
+                        if self.exceeds_bounds(next_pos) {
+                            continue;
+                        }
                         let next_tile = self.at(next_pos);
+                        
+                        // println!("Tile - Dir - NextTile: {:?} ==> {:?} ==> {:?}", tile, direction, next_tile);
 
                         if visited_tiles.contains(&next_tile) {
                             continue;
@@ -97,6 +111,8 @@ impl Field {
 
             current_tiles = next_current_tiles;
             next_current_tiles = vec![];
+
+            steps += 1;
 
             if current_tiles.is_empty() {
                 break;
@@ -133,70 +149,70 @@ impl Tile {
             directions.push(DIRECTION_WEST);
         }
         if self.connects_east() {
-            directions.push(DIRECTION_EAST);
+            directions.push(DIRECTION_SOUTH);
         }
         directions
     }
 
-    pub fn pipe_forward(&self, abs_entry_direction: Direction) -> Option<(Direction, Position)>
+    pub fn pipe_forward(&self, abs_entry_direction: Direction) -> Option<Position>
     {
         match abs_entry_direction {
-            DIRECTION_EAST => // from west
+            DIRECTION_WEST =>
             {
                 match self.tile_type {
                     TileType::NtoW => {
-                        return Option::Some((DIRECTION_NORTH, (self.pos.0, self.pos.1 + 1)));
+                        return Option::Some((self.pos.0, self.pos.1 - 1));
                     },
                     TileType::Horiz => {
-                        return Option::Some((DIRECTION_EAST, (self.pos.0 + 1, self.pos.1)));
+                        return Option::Some((self.pos.0 + 1, self.pos.1));
                     },
                     TileType::StoW => {
-                        return Option::Some((DIRECTION_SOUTH, (self.pos.0, self.pos.1 - 1)));
+                        return Option::Some((self.pos.0, self.pos.1 + 1));
                     },
                     _ => Option::None
                 }
             },
-            DIRECTION_WEST => // from east,
+            DIRECTION_EAST =>
             {
                 match self.tile_type {
                     TileType::NtoE => {
-                        return Option::Some((DIRECTION_NORTH, (self.pos.0, self.pos.1 + 1)));
+                        return Option::Some((self.pos.0, self.pos.1 - 1));
                     },
                     TileType::Horiz => {
-                        return Option::Some((DIRECTION_WEST, (self.pos.0 - 1, self.pos.1)));
+                        return Option::Some((self.pos.0 - 1, self.pos.1));
                     },
                     TileType::StoE => {
-                        return Option::Some((DIRECTION_SOUTH, (self.pos.0, self.pos.1 - 1)));
+                        return Option::Some((self.pos.0, self.pos.1 + 1));
                     },
                     _ => Option::None
                 }
             },
-            DIRECTION_NORTH => // from south,
+            DIRECTION_SOUTH =>
             {
                 match self.tile_type {
                     TileType::StoE => {
-                        return Option::Some((DIRECTION_EAST, (self.pos.0 + 1, self.pos.1)));
+                        return Option::Some((self.pos.0 + 1, self.pos.1));
                     },
                     TileType::Vert => {
-                        return Option::Some((DIRECTION_NORTH, (self.pos.0, self.pos.1 + 1)));
+                        return Option::Some((self.pos.0, self.pos.1 - 1));
                     },
                     TileType::StoW => {
-                        return Option::Some((DIRECTION_WEST, (self.pos.0 - 1, self.pos.1)));
+                        return Option::Some((self.pos.0 - 1, self.pos.1));
                     },
                     _ => Option::None
                 }
             },
-            DIRECTION_SOUTH => // from north,
+            DIRECTION_NORTH =>
             {
                 match self.tile_type {
                     TileType::NtoE => {
-                        return Option::Some((DIRECTION_EAST, (self.pos.0 + 1, self.pos.1)));
+                        return Option::Some((self.pos.0 + 1, self.pos.1));
                     },
                     TileType::Vert => {
-                        return Option::Some((DIRECTION_SOUTH, (self.pos.0, self.pos.1 - 1)));
+                        return Option::Some((self.pos.0, self.pos.1 + 1));
                     },
                     TileType::NtoW => {
-                        return Option::Some((DIRECTION_WEST, (self.pos.0 - 1, self.pos.1)));
+                        return Option::Some((self.pos.0 - 1, self.pos.1));
                     },
                     _ => Option::None
                 }
@@ -216,8 +232,8 @@ impl Default for TileType {
 // Model
 // ----------------------------------------------------
 
-pub const DIRECTION_NORTH: Direction = (0,1);
-pub const DIRECTION_SOUTH: Direction = (0,-1);
+pub const DIRECTION_NORTH: Direction = (0,-1);
+pub const DIRECTION_SOUTH: Direction = (0,1);
 pub const DIRECTION_WEST: Direction = (-1,0);
 pub const DIRECTION_EAST: Direction = (1,0);
 

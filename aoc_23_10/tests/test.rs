@@ -16,29 +16,29 @@ use aoc_23_10::*;
 // ----------------------------------------------------
 
 #[rstest]
-#[case(Tile{ tile_type: TileType::Horiz, pos: (5,5) }, DIRECTION_WEST, Some((DIRECTION_WEST, (4,5))))]
-#[case(Tile{ tile_type: TileType::Horiz, pos: (5,5) }, DIRECTION_EAST, Some((DIRECTION_EAST, (6,5))))]
+#[case(Tile{ tile_type: TileType::Horiz, pos: (5,5) }, DIRECTION_WEST, Some((6,5)))]
+#[case(Tile{ tile_type: TileType::Horiz, pos: (5,5) }, DIRECTION_EAST, Some((4,5)))]
 
-#[case(Tile{ tile_type: TileType::Vert, pos: (5,5) }, DIRECTION_NORTH, Some((DIRECTION_NORTH, (5,6))))]
-#[case(Tile{ tile_type: TileType::Vert, pos: (5,5) }, DIRECTION_SOUTH, Some((DIRECTION_SOUTH, (5,4))))]
+#[case(Tile{ tile_type: TileType::Vert, pos: (5,5) }, DIRECTION_NORTH, Some((5,6)))]
+#[case(Tile{ tile_type: TileType::Vert, pos: (5,5) }, DIRECTION_SOUTH, Some((5,4)))]
 
-#[case(Tile{ tile_type: TileType::NtoE, pos: (5,5) }, DIRECTION_SOUTH, Some((DIRECTION_EAST, (6,5))))]
-#[case(Tile{ tile_type: TileType::NtoE, pos: (5,5) }, DIRECTION_WEST, Some((DIRECTION_NORTH, (5,6))))]
+#[case(Tile{ tile_type: TileType::NtoE, pos: (5,5) }, DIRECTION_NORTH, Some((6,5)))]
+#[case(Tile{ tile_type: TileType::NtoE, pos: (5,5) }, DIRECTION_EAST, Some((5,4)))]
 
-#[case(Tile{ tile_type: TileType::NtoW, pos: (5,5) }, DIRECTION_SOUTH, Some((DIRECTION_WEST, (4,5))))]
-#[case(Tile{ tile_type: TileType::NtoW, pos: (5,5) }, DIRECTION_EAST, Some((DIRECTION_NORTH, (5,6))))]
+#[case(Tile{ tile_type: TileType::NtoW, pos: (5,5) }, DIRECTION_NORTH, Some((4,5)))]
+#[case(Tile{ tile_type: TileType::NtoW, pos: (5,5) }, DIRECTION_WEST, Some((5,4)))]
 
-#[case(Tile{ tile_type: TileType::StoE, pos: (5,5) }, DIRECTION_NORTH, Some((DIRECTION_EAST, (6,5))))]
-#[case(Tile{ tile_type: TileType::StoE, pos: (5,5) }, DIRECTION_WEST, Some((DIRECTION_SOUTH, (5,4))))]
+#[case(Tile{ tile_type: TileType::StoE, pos: (5,5) }, DIRECTION_SOUTH, Some((6,5)))]
+#[case(Tile{ tile_type: TileType::StoE, pos: (5,5) }, DIRECTION_EAST, Some((5,6)))]
 
-#[case(Tile{ tile_type: TileType::StoW, pos: (5,5) }, DIRECTION_NORTH, Some((DIRECTION_WEST, (4,5))))]
-#[case(Tile{ tile_type: TileType::StoW, pos: (5,5) }, DIRECTION_EAST, Some((DIRECTION_SOUTH, (5,4))))]
+#[case(Tile{ tile_type: TileType::StoW, pos: (5,5) }, DIRECTION_SOUTH, Some((4,5)))]
+#[case(Tile{ tile_type: TileType::StoW, pos: (5,5) }, DIRECTION_WEST, Some((5,6)))]
 
-#[case(Tile{ tile_type: TileType::StoW, pos: (5,5) }, DIRECTION_WEST, None)]
+#[case(Tile{ tile_type: TileType::StoW, pos: (5,5) }, DIRECTION_EAST, None)]
 fn test_tile_pipe_forward(
     #[case] in_tile: Tile,
     #[case] in_entry_direction: Direction,
-    #[case] expected: Option<(Direction, Position)>
+    #[case] expected: Option<Position>
 )
 {
     assert_eq!(in_tile.pipe_forward(in_entry_direction), expected);
@@ -46,6 +46,7 @@ fn test_tile_pipe_forward(
 
 #[rstest]
 #[case(Path::new("./../input/aoc_23_10/input_example.txt"), 4)]
+#[case(Path::new("./../input/aoc_23_10/input_example2.txt"), 8)]
 fn test_steps_to_farthest_tile(
     #[case] in_path: &Path,
     #[case] expected: usize,

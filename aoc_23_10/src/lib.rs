@@ -54,16 +54,16 @@ impl Field {
         let pos_south = (tile.pos.0, tile.pos.1 + 1);
         let pos_north = (tile.pos.0, tile.pos.1 - 1);
 
-        if !self.exceeds_bounds(pos_east) && self.at(pos_east).connects_west() {
+        if tile.connects_east() && !self.exceeds_bounds(pos_east) && self.at(pos_east).connects_west() {
             connected_tiles.push(self.at(pos_east));
         }
-        if !self.exceeds_bounds(pos_west) && self.at(pos_west).connects_east() {
+        if tile.connects_west() && !self.exceeds_bounds(pos_west) && self.at(pos_west).connects_east() {
             connected_tiles.push(self.at(pos_west));
         }
-        if !self.exceeds_bounds(pos_south) && self.at(pos_south).connects_north() {
+        if tile.connects_south() && !self.exceeds_bounds(pos_south) && self.at(pos_south).connects_north() {
             connected_tiles.push(self.at(pos_south));
         }
-        if !self.exceeds_bounds(pos_north) && self.at(pos_north).connects_south() {
+        if tile.connects_north() && !self.exceeds_bounds(pos_north) && self.at(pos_north).connects_south() {
             connected_tiles.push(self.at(pos_north));
         }
 
@@ -74,43 +74,43 @@ impl Field {
     {
         let mut steps = 0;
 
+        let mut previous_tiles = vec![ self.animal_tile() ];
         let mut current_tiles = self.connecting_tiles(self.animal_tile());
-        let mut visited_tiles = vec![ self.animal_tile() ];
+        let mut next_tiles = vec![];
 
-        let mut next_current_tiles = vec![];
+        let mut trace_a = vec![ current_tiles[0] ];
+        let mut trace_b = vec![ current_tiles[1] ];
 
         loop 
         {
-            // println!("Current tiles: {:?}", current_tiles);
-            // println!("Visited tiles: {:?}", visited_tiles);
-            // println!("Steps: {:?}", steps);
-
             for tile in &current_tiles
             {
-                // println!("Enterable directions: {:?} ==> {:?}", tile.enterable_directions(), tile);
-
                 for direction in tile.enterable_directions() {
                     if let Some(next_pos) = tile.pipe_forward(direction) {
                         if self.exceeds_bounds(next_pos) {
                             continue;
                         }
                         let next_tile = self.at(next_pos);
-                        
-                        // println!("Tile - Dir - NextTile: {:?} ==> {:?} ==> {:?}", tile, direction, next_tile);
 
-                        if visited_tiles.contains(&next_tile) {
+                        if previous_tiles.contains(&next_tile) || next_tiles.contains(&next_tile) {
                             continue;
                         }
                         else {
-                            next_current_tiles.push(next_tile);
+                            next_tiles.push(next_tile);
+                            if trace_a.contains(tile) {
+                                trace_a.push(next_tile);
+                            }
+                            if trace_b.contains(tile) {
+                                trace_b.push(next_tile);
+                            }
                         }
                     }
                 }
-                visited_tiles.push(tile);
             }
 
-            current_tiles = next_current_tiles;
-            next_current_tiles = vec![];
+            previous_tiles = current_tiles;
+            current_tiles = next_tiles.clone();
+            next_tiles.clear();
 
             steps += 1;
 
@@ -125,16 +125,16 @@ impl Field {
 
 impl Tile {
     pub fn connects_north(&self) -> bool {
-        [ TileType::NtoW, TileType::Vert, TileType::NtoE ].contains(&self.tile_type)
+        [ TileType::Animal, TileType::NtoW, TileType::Vert, TileType::NtoE ].contains(&self.tile_type)
     }
     pub fn connects_south(&self) -> bool {
-        [ TileType::StoW, TileType::Vert, TileType::StoE ].contains(&self.tile_type)
+        [ TileType::Animal, TileType::StoW, TileType::Vert, TileType::StoE ].contains(&self.tile_type)
     }
     pub fn connects_west(&self) -> bool {
-        [ TileType::NtoW, TileType::Horiz, TileType::StoW ].contains(&self.tile_type)
+        [ TileType::Animal, TileType::NtoW, TileType::Horiz, TileType::StoW ].contains(&self.tile_type)
     }
     pub fn connects_east(&self) -> bool {
-        [ TileType::NtoE, TileType::Horiz, TileType::StoE ].contains(&self.tile_type)
+        [ TileType::Animal, TileType::NtoE, TileType::Horiz, TileType::StoE ].contains(&self.tile_type)
     }
 
     pub fn enterable_directions(&self) -> Vec<Direction> {
@@ -149,7 +149,7 @@ impl Tile {
             directions.push(DIRECTION_WEST);
         }
         if self.connects_east() {
-            directions.push(DIRECTION_SOUTH);
+            directions.push(DIRECTION_EAST);
         }
         directions
     }

@@ -47,6 +47,7 @@ fn test_tile_pipe_forward(
 #[rstest]
 #[case(Path::new("./../input/aoc_23_10/input_example.txt"), 4)]
 #[case(Path::new("./../input/aoc_23_10/input_example2.txt"), 8)]
+#[case(Path::new("./../input/aoc_23_10/input_example3.txt"), 8)]
 fn test_steps_to_farthest_tile(
     #[case] in_path: &Path,
     #[case] expected: usize,
@@ -61,6 +62,13 @@ fn test_steps_to_farthest_tile(
     vec![
         Tile{tile_type: TileType::Horiz, pos: (2,1)},
         Tile{tile_type: TileType::Vert, pos: (1,2)},
+    ]
+)]
+#[case(Path::new("./../input/aoc_23_10/input.txt"), 
+    Tile{tile_type: TileType::StoE, pos: (79,28)}, 
+    vec![
+        Tile{tile_type: TileType::NtoW, pos: (80,28)},
+        Tile{tile_type: TileType::Vert, pos: (79,29)},
     ]
 )]
 fn test_connecting_tiles(

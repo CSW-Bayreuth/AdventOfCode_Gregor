@@ -48,12 +48,13 @@ fn test_tile_pipe_forward(
 #[case(Path::new("./../input/aoc_23_10/input_example.txt"), 4)]
 #[case(Path::new("./../input/aoc_23_10/input_example2.txt"), 8)]
 #[case(Path::new("./../input/aoc_23_10/input_example3.txt"), 8)]
+#[case(Path::new("./../input/aoc_23_10/input.txt"), 6786)]
 fn test_steps_to_farthest_tile(
     #[case] in_path: &Path,
     #[case] expected: usize,
 )
 {
-    assert_eq!(read_field(in_path).steps_to_farthest_tile(), expected);
+    assert_eq!(read_field(in_path).generate_pipeloop().steps_to_farthest_point, expected);
 }
 
 #[rstest]
@@ -81,6 +82,68 @@ fn test_connecting_tiles(
     let solution = field.connecting_tiles(&in_tile);
     let solution_cleaned: Vec<Tile> = solution.into_iter().cloned().collect();
     assert_eq!(solution_cleaned, expected);
+}
+
+#[rstest]
+#[case(Path::new("./../input/aoc_23_10/input_example4.txt"),
+    Tile{tile_type: TileType::Ground, pos: (2,6)},
+    Area{tiles: vec![ Tile{tile_type: TileType::Ground, pos: (2,6)}, Tile{tile_type: TileType::Ground, pos: (3,6)} ], is_border_area: false}
+)]
+fn test_expand_to_area(
+    #[case] in_path: &Path,
+    #[case] in_tile : Tile,
+    #[case] expected : Area
+)
+{
+    let field = read_field(in_path);
+    let pipeloop = field.generate_pipeloop();
+    assert_eq!(pipeloop.expand_to_area(&in_tile, &field), expected);
+}
+
+// #[rstest]
+// #[case(Path::new("./../input/aoc_23_10/input_example4.txt"), 4)]
+// #[case(Path::new("./../input/aoc_23_10/input_example5.txt"), 8)]
+// #[case(Path::new("./../input/aoc_23_10/input_example6.txt"), 10)]
+// fn test_num_enclosed_areas(
+//     #[case] in_path: &Path,
+//     #[case] expected : usize
+// )
+// {
+//     let field = read_field(in_path);
+//     let pipeloop = field.generate_pipeloop();
+//     assert_eq!(pipeloop.num_enclosed_areas(&field), expected);
+// }
+
+#[rstest]
+#[case(Path::new("./../input/aoc_23_10/input_example.txt"), 4)]
+#[case(Path::new("./../input/aoc_23_10/input_example2.txt"), 4)]
+#[case(Path::new("./../input/aoc_23_10/input_example3.txt"), 4)]
+#[case(Path::new("./../input/aoc_23_10/input_example4.txt"), 8)]
+#[case(Path::new("./../input/aoc_23_10/input_example5.txt"), 9)]
+#[case(Path::new("./../input/aoc_23_10/input_example6.txt"), 9)]
+fn test_max_y(
+    #[case] in_path: &Path,
+    #[case] expected : usize
+)
+{
+    let field = read_field(in_path);
+    assert_eq!(field.max_y(), expected);
+}
+
+#[rstest]
+#[case(Path::new("./../input/aoc_23_10/input_example.txt"), 4)]
+#[case(Path::new("./../input/aoc_23_10/input_example2.txt"), 4)]
+#[case(Path::new("./../input/aoc_23_10/input_example3.txt"), 4)]
+#[case(Path::new("./../input/aoc_23_10/input_example4.txt"), 10)]
+#[case(Path::new("./../input/aoc_23_10/input_example5.txt"), 19)]
+#[case(Path::new("./../input/aoc_23_10/input_example6.txt"), 19)]
+fn test_max_x(
+    #[case] in_path: &Path,
+    #[case] expected : usize,
+)
+{
+    let field = read_field(in_path);
+    assert_eq!(field.max_x(), expected);
 }
 
 // ----------------------------------------------------

@@ -13,7 +13,7 @@ pub fn start_app()
 {
     println!(
         "Steps to farthest tile from animal: {}",
-        read_field(Path::new("./input/aoc_23_10/input.txt")).steps_to_farthest_tile()
+        read_field(Path::new("./input/aoc_23_10/input.txt")).generate_pipeloop().steps_to_farthest_point
     );
     //animal_pos = (25,77)
 /*     println!(
@@ -34,12 +34,28 @@ impl Field {
         &self.tiles[x][y]
     }
 
+    pub fn max_x(&self) -> usize {
+        self.tiles[0].len() - 1
+    }
+
+    pub fn max_y(&self) -> usize {
+        self.tiles.len() - 1
+    }
+
+    pub fn max_xi(&self) -> isize {
+        (self.tiles[0].len() - 1) as isize
+    }
+
+    pub fn max_yi(&self) -> isize {
+        (self.tiles.len() - 1) as isize
+    }
+
     pub fn exceeds_bounds(&self, pos: Position) -> bool
     {
         pos.0 < 0 
         || pos.1 < 0 
-        || pos.0 >= self.tiles.len().try_into().unwrap() 
-        || pos.1 >= self.tiles[0].len().try_into().unwrap()
+        || pos.0 > self.max_xi()
+        || pos.1 > self.max_yi()
     }
 
     pub fn animal_tile(&self) -> &Tile {
@@ -70,7 +86,7 @@ impl Field {
         connected_tiles
     }
 
-    pub fn steps_to_farthest_tile(&self) -> usize
+    pub fn generate_pipeloop(&self) -> PipeLoop
     {
         let mut steps = 0;
 
@@ -119,7 +135,82 @@ impl Field {
             }
         }
 
-        steps
+        let trace_a_copy: Vec<Tile> = trace_a.into_iter().cloned().collect();
+        let trace_b_copy: Vec<Tile> = trace_b.into_iter().cloned().collect();
+
+        PipeLoop{ trace_a: trace_a_copy, trace_b: trace_b_copy, steps_to_farthest_point: steps }
+    }
+}
+
+impl PipeLoop {
+    pub fn is_on_loop(&self, tile: &Tile) -> bool {
+        self.trace_a.contains(tile) || self.trace_b.contains(tile)
+    }
+
+    pub fn expand_to_area(&self, initial_tile: &Tile, field: &Field) -> Area {
+
+        let mut tiles: Vec<Tile> = vec![];
+        let mut unexplored_tiles: Vec<Tile> = vec![ initial_tile.clone() ];
+
+        let mut is_border_area = false;
+
+        let mut is_valid_neighbour = |pos, tiles_: &Vec<Tile>, unexplored_tiles_: &Vec<Tile>| {
+            let (x,y) = pos;
+            if field.exceeds_bounds(pos) {
+                is_border_area = true;
+                return None;
+            }
+            let tile = field.at((x,y));
+            if self.is_on_loop(tile) {
+                return None;
+            }
+            if tiles_.contains(&tile) || unexplored_tiles_.contains(&tile) {
+                return None;
+            }
+            Some(tile.clone())
+        };
+
+        loop {
+            let inspected_tile_option = unexplored_tiles.pop();
+            if inspected_tile_option.is_none() {
+                break;
+            }
+
+            let inspected_tile = inspected_tile_option.unwrap();
+            if inspected_tile.tile_type == TileType::Ground {
+                tiles.push(inspected_tile.clone());
+            }
+
+            let (x,y) = inspected_tile.pos;
+            if let Some(tile) = is_valid_neighbour((x, y-1), &tiles, &unexplored_tiles) {
+                unexplored_tiles.push(tile.clone());
+            }
+            if let Some(tile) = is_valid_neighbour((x, y+1), &tiles, &unexplored_tiles) {
+                unexplored_tiles.push(tile.clone());
+            }
+            if let Some(tile) = is_valid_neighbour((x-1, y), &tiles, &unexplored_tiles) {
+                unexplored_tiles.push(tile.clone());
+            }
+            if let Some(tile) = is_valid_neighbour((x+1, y), &tiles, &unexplored_tiles) {
+                unexplored_tiles.push(tile.clone());
+            }
+        }
+
+        Area { tiles: tiles, is_border_area: is_border_area }
+    }
+
+    pub fn num_enclosed_areas(&self, _: &Field) -> usize {
+
+        // let border_connected_tiles: Vec<&Tile> = vec![];
+
+        // let mut pipe: Vec<Tile> = self.trace_a.clone();
+        // pipe.append(&mut self.trace_b.clone());
+
+        // for pipe_tile in pipe {
+            
+        // }
+
+        0
     }
 }
 
@@ -244,12 +335,25 @@ pub struct Field {
 }
 
 #[derive(Debug, Clone, Default, PartialEq)]
+pub struct PipeLoop {
+    pub trace_a: Vec<Tile>,
+    pub trace_b: Vec<Tile>,
+    pub steps_to_farthest_point : usize
+}
+
+#[derive(Debug, Clone, Default, PartialEq)]
+pub struct Area {
+    pub tiles: Vec<Tile>,
+    pub is_border_area: bool
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
 pub struct Tile {
     pub tile_type: TileType,
     pub pos: Position
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum TileType{
     Vert,
     Horiz,

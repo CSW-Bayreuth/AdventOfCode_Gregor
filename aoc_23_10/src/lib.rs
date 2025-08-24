@@ -177,7 +177,7 @@ impl PipeLoop {
             }
 
             let inspected_tile = inspected_tile_option.unwrap();
-            if inspected_tile.tile_type == TileType::Ground {
+            if !self.is_on_loop(&inspected_tile) {
                 tiles.push(inspected_tile.clone());
             }
 
@@ -201,16 +201,27 @@ impl PipeLoop {
 
     pub fn num_enclosed_areas(&self, _: &Field) -> usize {
 
-        // let border_connected_tiles: Vec<&Tile> = vec![];
+        let areas_side_a: Vec<Area> = vec![];
+        // let mut areas_side_b: Vec<Area> = vec![];
+        // let mut tiles_side_a: Vec<Tile> = vec![];
+        // let mut tiles_side_b: Vec<Tile> = vec![];
 
-        // let mut pipe: Vec<Tile> = self.trace_a.clone();
-        // pipe.append(&mut self.trace_b.clone());
+        // let mut is_side_a_inside = true;
 
-        // for pipe_tile in pipe {
-            
-        // }
+        // let start_tile = field.animal_tile();
 
-        0
+        // 2. Follow the inside a complete round along the pipe
+        // - respect pipe-tiles directly neighbouring but leaving a space
+        // - should work with per-tile local lookahead only
+
+            // 2.1. For each tile adjacent to a pipe-tile on side a/b
+            // - check that it's junk (no pipeloop-tile)
+            // - check that it's not contained in tiles_side_a/b (no area with this tile was already found)
+            // - ok, it's a new area!
+            // - call expand_to_area and add the area to areas_side_a/b
+            // - if it's side a and
+
+        areas_side_a.len()
     }
 }
 
